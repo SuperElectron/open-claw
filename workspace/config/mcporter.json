@@ -1,0 +1,52 @@
+{
+  "mcpServers": {
+    "filesystem": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@modelcontextprotocol/server-filesystem",
+        "/Users/mat/.openclaw/workspace/resources"
+      ]
+    },
+    "crm": {
+      "command": "devbox",
+      "args": [
+        "run",
+        "--config",
+        "/Users/mat/code/paykali/open-claw/devbox.json",
+        "--",
+        "/Users/mat/code/paykali/open-claw/infra/mcp/twenty-mcp-rust/target/release/twenty-mcp-rust"
+      ],
+      "env": {
+        "TWENTY_BASE_URL": "http://100.114.72.97:3000",
+        "TWENTY_API_KEY": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJkMGJkMWNiMC1jNjkxLTRkMjItODVlNS0yOTMzYTU1OTI3MGUiLCJ0eXBlIjoiQVBJX0tFWSIsIndvcmtzcGFjZUlkIjoiZDBiZDFjYjAtYzY5MS00ZDIyLTg1ZTUtMjkzM2E1NTkyNzBlIiwiaWF0IjoxNzcwOTAzMDg1LCJleHAiOjQ5MjQ0MTY2ODQsImp0aSI6IjEyOWJhZGI3LWJlZjgtNDE5Yi05NTFlLWE1YTJhZDcwYzJkMCJ9.oNH4JDvIkO-NDxEndCFS8jkc4dAne4SjNtRBg1WH_64"
+      }
+    },
+    "linkedin": {
+      "command": "devbox",
+      "args": [
+        "run",
+        "--config",
+        "/Users/mat/code/paykali/open-claw/devbox.json",
+        "--",
+        "uv",
+        "run",
+        "--project",
+        "/Users/mat/code/paykali/open-claw/infra/mcp/linkedin-mcp",
+        "linkedin-mcp"
+      ],
+      "env": {
+        "GOOGLE_API_KEY": "AIzaSyAv_g9AwnDCL6400HzsRD7D7I6a3sVE5IA"
+      }
+    },
+    "docling": {
+      "command": "uvx",
+      "args": [
+        "--from=docling-mcp",
+        "docling-mcp-server"
+      ],
+      "keep_alive": true
+    }
+  },
+  "imports": []
+}

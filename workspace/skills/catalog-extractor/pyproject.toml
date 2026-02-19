@@ -1,0 +1,14 @@
+[project]
+name = "doc-extract"
+version = "0.1.0"
+description = "Tools for extracting structured RAG data from PDF documents using Docling"
+requires-python = ">=3.10"
+dependencies = [
+    "docling==2.73.1",
+    "pypdf>=6.7.0",
+    "google-generativeai>=0.3.0",
+    "python-dotenv",
+]
+
+[tool.uv]
+# Optional: if you want to pin specific sources or behaviors
