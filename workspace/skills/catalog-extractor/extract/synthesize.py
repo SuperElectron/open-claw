@@ -2,23 +2,59 @@ import os
 import sys
 import json
 import re
-import time
+import PIL.Image
 from pathlib import Path
 from dotenv import load_dotenv
+from google import genai
+from google.genai import types
+from tenacity import retry, stop_after_attempt, wait_exponential, before_sleep
 
 # Load Environment Variables from .env file (if present)
 load_dotenv()
 
-import google.generativeai as genai
-from google.generativeai.types import HarmCategory, HarmBlockThreshold
-
-# API Setup
+# API Setup & Model Configuration
+MODEL_CONFIG = {
+    "model_name": "gemini-2.0-flash",
+    "generation_config": types.GenerateContentConfig(
+        response_mime_type="application/json",
+        max_output_tokens=8192,
+        temperature=0.1
+    )
+}
 API_KEY = os.environ.get("GOOGLE_API_KEY")
 if not API_KEY:
     print("Error: GOOGLE_API_KEY environment variable not set.")
     sys.exit(1)
 
-genai.configure(api_key=API_KEY)
+client = genai.Client(api_key=API_KEY)
+
+def log_retry_attempt(retry_state):
+    """
+    Logs warnings for rate limits or server errors before retrying.
+    Extracts the API error message to show exactly what limit was hit.
+    """
+    exception = retry_state.outcome.exception()
+    wait_time = retry_state.next_action.sleep
+    
+    # Check for likely rate limit markers in the error string
+    error_str = str(exception)
+    if "429" in error_str or "ResourceExhausted" in error_str or "Quota" in error_str:
+        print(f"\n  [WARNING] Rate Limit Hit. Retrying in {wait_time:.1f}s...\nERROR: {error_str}")
+    else:
+        print(f"\n  [WARNING] API Error: {error_str}. Retrying in {wait_time:.1f}s...")
+
+@retry(
+    stop=stop_after_attempt(5),      # Try up to 5 times
+    wait=wait_exponential(multiplier=2, min=4, max=60), # Wait 4s, 8s, 16s... (Exponential Backoff)
+    before_sleep=log_retry_attempt,  # Log before waiting
+    reraise=True                     # If it fails 5 times, raise the error to crash the script
+)
+def generate_with_retry(client, model_name, contents, config):
+    return client.models.generate_content(
+        model=model_name,
+        contents=contents,
+        config=config
+    )
 
 def synthesize_catalog(export_dir):
     export_path = Path(export_dir).resolve()
@@ -82,16 +118,12 @@ def synthesize_catalog(export_dir):
     with open(sku_output_path, "w") as f: pass
     with open(catalog_output_path, "w") as f: 
         f.write("# Product Catalog (Synthesized)\n\n")
-
-    # Model Setup
-    model_name = 'gemini-2.0-flash'
-    model = genai.GenerativeModel(model_name)
     
-    print(f"Synthesizing {len(image_files)} pages using {model_name}...")
+    print(f"Synthesizing {len(image_files)} pages using {MODEL_CONFIG['model_name']}...")
 
     # Token Tracking
     token_stats = {
-        "model": model_name,
+        "model": MODEL_CONFIG['model_name'],
         "total_input": 0,
         "total_output": 0,
         "pages_processed": 0
@@ -134,7 +166,7 @@ def synthesize_catalog(export_dir):
 
         INPUTS:
         - Image: The visual ground truth.
-        - Text: "{raw_text[:2000]}..." (OCR/Extraction - may have noise).
+        - Text: "{raw_text}" (OCR/Extraction - may have noise).
         - Image Provenance (Available Crops/Diagrams):
         ```json
         {prov_json_str}
@@ -181,12 +213,19 @@ def synthesize_catalog(export_dir):
 
         # Call API
         # Load Image (Inline)
-        import PIL.Image
         img = PIL.Image.open(img_path)
+
+        # Optimization: Resize to 50% to reduce token usage
+        # Original was likely ~1200x1600 (factor 2.0). 
+        # Scaling by 0.5 brings it back to ~600x800 (factor 1.0 equivalent)
+        new_size = (int(img.width * 0.5), int(img.height * 0.5))
+        img = img.resize(new_size, PIL.Image.Resampling.LANCZOS)
         
-        response = model.generate_content(
-            [prompt, img],
-            generation_config={"response_mime_type": "application/json"}
+        response = generate_with_retry(
+            client=client,
+            model_name=MODEL_CONFIG['model_name'],
+            contents=[prompt, img],
+            config=MODEL_CONFIG['generation_config']
         )
         
         # Track Tokens
@@ -199,10 +238,23 @@ def synthesize_catalog(export_dir):
             print(f"  -> Tokens: {in_tok} In / {out_tok} Out")
         
         try:
-            result = json.loads(response.text)
+            # Clean possible markdown formatting
+            clean_text = response.text.strip()
+            if clean_text.startswith("```json"):
+                clean_text = clean_text[7:]
+            if clean_text.startswith("```"):
+                clean_text = clean_text[3:]
+            if clean_text.endswith("```"):
+                clean_text = clean_text[:-3]
+            clean_text = clean_text.strip()
+            
+            result = json.loads(clean_text)
         except json.JSONDecodeError as e:
             print(f"  !! JSON Parse Error on Page {page_num}: {e}")
-            print(f"  !! Raw Response Snippet: {response.text[:500]}...")
+            try:
+                print(f"  !! Raw Response Snippet: {response.text[:500]}...")
+            except:
+                pass
             # Critical Error: Exit immediately
             sys.exit(1)
         

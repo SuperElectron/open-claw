@@ -39,9 +39,16 @@ def transform_to_ai_ready(json_input_path, jsonl_output_path, page_offset=0):
         if not keys: return chunk
 
         last_val = values[-1]
+        sku_val = chunk.get("sku")
+
+        if not isinstance(last_val, str):
+            last_val = str(last_val) if last_val is not None else ""
+        
+        if not isinstance(sku_val, str):
+            sku_val = str(sku_val) if sku_val is not None else ""
         
         # Heuristic: Last value is the SKU?
-        is_shifted = (last_val == chunk["sku"] or last_val in chunk["sku"] or chunk["sku"] in last_val)
+        is_shifted = (last_val == sku_val or last_val in sku_val or sku_val in last_val)
         
         # Special case for "5.03" where sku is "5.03" but real part is "5671"
         if not is_shifted and "mm" in keys[-1]:

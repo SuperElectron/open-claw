@@ -9,6 +9,9 @@ logs/
 memory/
 subagents/
 
+# sensitive files
+openclaw.json
+exec-approvals.json
 
 # IDE files
 .DS_Store
@@ -21,6 +24,7 @@ subagents/
 *.jsonl
 *.lock
 *.bak
+*.bak.*
 update-check.json
 
 # Python Cache
@@ -29,4 +33,3 @@ venv
 __pycache__/
 *.py[cod]
 *$py.class
-

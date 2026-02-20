@@ -54,3 +54,20 @@ A machine-readable dataset of every product.
 ## Constraints
 1.  **No Data Loss**: Never drop a table because it "doesn't look like a SKU list". Extract it, let the AI label it.
 2.  **Visual Verification**: Every data point should be visually verifiable against the `pageN.png`.
+
+
+--
+
+# Notes
+
+- synthesize.py files with JSON error, parsing LLM response.
+
+```python
+try:
+            result = json.loads(response.text)
+        except json.JSONDecodeError as e:
+            print(f"  !! JSON Parse Error on Page {page_num}: {e}")
+            print(f"  !! Raw Response Snippet: {response.text[:500]}...")
+            # Critical Error: Exit immediately
+            sys.exit(1)
+```
