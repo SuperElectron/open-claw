@@ -8,7 +8,7 @@ from pathlib import Path
 # CRITICAL: It currently filters for tables with headers like "Part", "SKU", "Conductor".
 # Tables not matching these heuristics are dropped. If adapting for other docs, review `is_technical`.
 
-def transform_to_ai_ready(json_input_path, jsonl_output_path, page_offset=0):
+def process_skus(json_input_path, jsonl_output_path, page_offset=0):
     if not os.path.exists(json_input_path):
         print(f"Error: {json_input_path} not found.")
         return
@@ -208,4 +208,4 @@ if __name__ == "__main__":
     
     args = parser.parse_args()
     
-    transform_to_ai_ready(args.input, args.output, args.page_offset)
+    process_skus(args.input, args.output, args.page_offset)

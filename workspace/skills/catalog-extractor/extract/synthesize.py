@@ -58,14 +58,16 @@ def generate_with_retry(client, model_name, contents, config):
 
 def synthesize_catalog(export_dir):
     export_path = Path(export_dir).resolve()
-    raw_dir = export_path / "raw"
+    # In new architecture, everything is flat in the chunk dir (or in images/ subdir)
+    raw_dir = export_path  
     images_dir = raw_dir / "images"
-    final_dir = export_path / "final"
-    final_dir.mkdir(parents=True, exist_ok=True)
+    final_dir = export_path # We can output final files here too, or keep separate?
+    # Let's keep outputs in root of chunk dir
+
 
     # 1. Load Text Context (pypdf)
     text_map = {}
-    text_md_path = raw_dir / "text_pypdf.md"
+    text_md_path = raw_dir / "extract.md"
     if text_md_path.exists():
         content = text_md_path.read_text()
         # Split by "## Page N"
@@ -75,7 +77,7 @@ def synthesize_catalog(export_dir):
             page_text = parts[i+1].strip()
             text_map[page_num] = page_text
     else:
-        print("Warning: No text_pypdf.md found.")
+        print("Warning: No extract.md found.")
 
     # 1b. Load Image Provenance Map
     prov_map = []
