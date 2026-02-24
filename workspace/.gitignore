@@ -3,4 +3,5 @@ venv
 
 generated/
 memory/
+temp/
 

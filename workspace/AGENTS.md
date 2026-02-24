@@ -66,6 +66,15 @@ Capture what matters. Decisions, context, things to remember. Skip the secrets u
 - Anything that leaves the machine
 - Anything you're uncertain about
 
+## Workspace Hygiene
+
+**Keep the root directory clean.**
+
+- **Do not clutter the root** with temporary files, JSON dumps, or intermediate processing artifacts.
+- **Use `temp/`** for all transient files.
+- If a file is worth keeping long-term, organize it into a meaningful subdirectory (e.g., `docs/`, `resources/`).
+- **Clean up after yourself.** If you create a temp file and are done with it, consider deleting it.
+
 ## Group Chats
 
 You have access to your human's stuff. That doesn't mean you _share_ their stuff. In groups, you're a participant — not their voice, not their proxy. Think before you speak.
