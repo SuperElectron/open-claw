@@ -26,6 +26,24 @@ metadata: {"clawdbot":{"emoji":"💼"}}
 
 ## Common Operations
 
+### Scrape Message Contacts (Discovery & Enrichment)
+Use this procedure to extract a list of people messaged within a date range and their direct thread URLs. This method is robust against LinkedIn's DOM structure.
+
+**Phase 1: Discovery**
+1. Navigate to `https://www.linkedin.com/messaging/` (`profile="chrome"`).
+2. Scroll the conversation sidebar to load history back to the target date.
+3. Extract names and dates from the list items.
+4. Save the initial list (e.g., to `generated/linkedin_conversations.md`).
+
+**Phase 2: Enrichment (Get URLs)**
+Iterate through the names in the list:
+1. Find the person's name in the sidebar.
+2. Click the conversation item.
+3. **Wait 2-3 seconds** for the URL bar to update (it changes to `.../messaging/thread/...`).
+4. Read the current URL (`window.location.href`).
+5. Update the markdown file with the format: `- Name: [URL]`. the markdown file is stored in `workspace/generated/` and you can give it a name that does not conflict with any existing files in that directory (unless the user specifies a name).
+6. Process in batches of 5-10 to ensure stability.
+
 ### Check Connection Status
 ```
 browser action=snapshot profile=chrome targetUrl="https://www.linkedin.com/feed/"
