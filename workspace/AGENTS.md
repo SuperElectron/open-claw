@@ -71,9 +71,9 @@ Capture what matters. Decisions, context, things to remember. Skip the secrets u
 **Keep the root directory clean.**
 
 - **Do not clutter the root** with temporary files, JSON dumps, or intermediate processing artifacts.
-- **Use `temp/`** for all transient files.
-- If a file is worth keeping long-term, organize it into a meaningful subdirectory (e.g., `docs/`, `resources/`).
-- **Clean up after yourself.** If you create a temp file and are done with it, consider deleting it.
+- **Use `temp/`** for all transient files. **Never** dump `.json` or `.txt` logs in the root.
+- If a file is worth keeping long-term, organize it into a meaningful subdirectory (e.g., `docs/`, `resources/`, `generated/` for stable artifacts).
+- **Clean up after yourself.** If you create a temp file and are done with it, delete it.
 
 ## Group Chats
 

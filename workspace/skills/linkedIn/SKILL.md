@@ -41,7 +41,7 @@ Iterate through the names in the list:
 2. Click the conversation item.
 3. **Wait 2-3 seconds** for the URL bar to update (it changes to `.../messaging/thread/...`).
 4. Read the current URL (`window.location.href`).
-5. Update the markdown file with the format: `- Name: [URL]`. the markdown file is stored in `workspace/generated/` and you can give it a name that does not conflict with any existing files in that directory (unless the user specifies a name).
+5. Update the markdown file with the format: `- Name: [URL]`. the markdown file is stored in `workspace/generated/` and you can give it a name that does not conflict with any existing files in that directory (unless the user specifies a name)
 6. Process in batches of 5-10 to ensure stability.
 
 ### Check Connection Status
