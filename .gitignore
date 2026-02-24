@@ -8,6 +8,7 @@ identity/
 logs/
 memory/
 subagents/
+browser/
 
 # sensitive files
 openclaw.json
