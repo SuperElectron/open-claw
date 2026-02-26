@@ -7,11 +7,11 @@
       "name": "linkedin-batch-connect",
       "enabled": true,
       "createdAtMs": 1772035691716,
-      "updatedAtMs": 1772051866459,
+      "updatedAtMs": 1772092116326,
       "schedule": {
+        "tz": "Europe/Paris",
         "kind": "cron",
-        "expr": "0 9-17 * * *",
-        "tz": "America/Los_Angeles"
+        "expr": "0 9-17 * * *"
       },
       "sessionTarget": "main",
       "wakeMode": "next-heartbeat",
@@ -20,7 +20,7 @@
         "text": "Time to process LinkedIn leads. Run `node scripts/get_linkedin_batch.js`.\n\nIf leads are returned, process them **SEQUENTIALLY (one at a time)** to avoid browser conflicts:\n1.  **Iterate:** For *each* lead:\n    *   Spawn a sub-agent (`sessions_spawn`) to connect with that *single* lead.\n    *   **WAIT** for that sub-agent to finish (poll `sessions_list` or wait for result) before starting the next one.\n2.  **Log:** Append completion to `memory/linkedin-cron.md`.\n3.  **Report:** Send a summary to #openkali when *all* are done.\n\nDo NOT run them in parallel. Browser focus must be exclusive."
       },
       "state": {
-        "nextRunAtMs": 1772125200000
+        "nextRunAtMs": 1772110800000
       }
     }
   ]

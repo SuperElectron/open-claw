@@ -11,7 +11,11 @@ metadata:
 
 # crm
 
-Manage the CRM system in Notion. The CRM is structured as a "Deals" catalog, where each Deal page contains its own inline "pipeline" database for specific opportunities.
+Manage the CRM system in Notion using the `notion` tool (API).
+
+**CRITICAL CONSTRAINT:** Do NOT use the `browser` tool to access Notion. All CRM operations must be performed via the `notion` CLI/API tool. Browser access is slow, requires login, and is strictly forbidden for CRM tasks.
+
+The CRM is structured as a "Deals" catalog, where each Deal page contains its own inline "pipeline" database for specific opportunities.
 
 ## Guidelines
 
